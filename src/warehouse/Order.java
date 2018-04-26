@@ -1,3 +1,5 @@
+package warehouse;
+import warehouse.locations.StorageShelf;
 
 public class Order  {
 	private int tickCount;

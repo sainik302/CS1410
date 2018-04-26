@@ -1,3 +1,4 @@
+package warehouse;
 import java.util.*;
 
 public class Statistic<SuperType> {

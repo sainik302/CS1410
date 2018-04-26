@@ -12,7 +12,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="596.0" prefWidth="606.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Robot" />
+      <Button fx:id="robot" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Robot" />
       <Button layoutX="73.0" layoutY="14.0" mnemonicParsing="false" text="Shelf" />
       <Button layoutX="135.0" layoutY="14.0" mnemonicParsing="false" text="Station" />
       <Button layoutX="196.0" layoutY="14.0" mnemonicParsing="false" text="Delete" />
@@ -71,6 +71,8 @@
             <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4" />
             <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Circle fx:id="circle" fill="DODGERBLUE" radius="14.0" stroke="BLACK" strokeType="INSIDE" GridPane.rowIndex="1" />
+            <Circle fill="DODGERBLUE" radius="13.0" stroke="BLACK" strokeType="INSIDE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>
