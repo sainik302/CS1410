@@ -54,25 +54,35 @@ public class Warehouse extends Application {
 
 		final Warehouse w = new Warehouse();
 
-		final ChargingPod cp = new ChargingPod();
-		final StorageShelf s = new StorageShelf();
-		final PackingStation p = new PackingStation();
+		final ChargingPod cp1 = new ChargingPod();
+		final StorageShelf s1 = new StorageShelf();
+		final PackingStation p1 = new PackingStation();
 
-		final Robot r = new Robot(30, cp);
+		final ChargingPod cp2 = new ChargingPod();
+		final StorageShelf s2 = new StorageShelf();
+		final PackingStation p2 = new PackingStation();
+
+		final Robot r1 = new Robot(30, cp1);
+		final Robot r2 = new Robot(30, cp2);
 
 		w.addOrder("hk47");
 		w.addOrder("hk48");
 		w.addOrder("hk49");
 
 		// Place the locations on the grid.
-		w.addLocation(4, 4, s);
-		w.addLocation(0, 4, p);
-		w.addLocation(0, 0, cp);
+		w.addLocation(4, 0, s1);
+		w.addLocation(0, 4, p1);
+		w.addLocation(0, 0, cp1);
+
+		w.addLocation(4, 4, s2);
+		w.addLocation(0, 3, p2);
+		w.addLocation(0, 1, cp2);
 
 		// Place the robot on the grid.
-		w.setRobot(0, 0, r);
+		w.setRobot(0, 0, r1);
+		w.setRobot(0, 1, r2);
 
-		w.simulate(40);
+		w.simulate(35);
 
 
 	}
@@ -189,7 +199,7 @@ public class Warehouse extends Application {
 
 						if (!robot.canMove()) {
 
-							System.out.println("No power!!");
+							System.out.println(robot + " no power");
 
 						} else if (!current.canLeave(robot)) {
 
