@@ -5,7 +5,11 @@ import warehouse.locations.Location;
 
 public class Robot{
 
+	private static int nextID = 0;
+
 	private int batteryCapacity;
+
+	private final String id;
 
 	private int batteryLevel;
 
@@ -25,6 +29,7 @@ public class Robot{
 		this.carrying = false;
 		this.target = null;
 		this.home = home;
+		this.id = "R" + nextID++;
 
 	}
 
@@ -92,6 +97,11 @@ public class Robot{
 
 	public boolean isCarrying() {
 		return carrying;
+	}
+
+	@Override
+	public String toString() {
+		return id;
 	}
 }
 

@@ -3,9 +3,12 @@ import warehouse.Robot;
 
 public class PackingStation extends Location {
 
+	private static int nextID = 0;
+
 	private String order;
 
 	public PackingStation() {
+		super("P" + nextID++);
 		order = "";
 	}
 

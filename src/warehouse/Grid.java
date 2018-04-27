@@ -1,4 +1,5 @@
 package warehouse;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,7 +12,7 @@ import warehouse.locations.Location;
 import warehouse.locations.PackingStation;
 import warehouse.locations.StorageShelf;
 
-public final class Grid{
+public final class Grid {
 
 	private final List<List<Location>> grid;
 
@@ -29,9 +30,9 @@ public final class Grid{
 
 	}
 
-	public Location get(int x, int y){
+	public Location get(int x, int y) {
 
-		if(x < 0 || y < 0){
+		if (x < 0 || y < 0) {
 			throw new IllegalArgumentException("That is not a valid coordinate.");
 		}
 
@@ -39,7 +40,7 @@ public final class Grid{
 			return null;
 		}
 
-		if(y >= height){
+		if (y >= height) {
 			return null;
 		}
 
@@ -121,20 +122,20 @@ public final class Grid{
 
 	}
 
-	public List<Location> getAdjacent(Location loc){
+	public List<Location> getAdjacent(Location loc) {
 		final List<Location> adjacent = new LinkedList<Location>();
 
 		boolean found = false;
 
 		for (int x = 0; x < width && !found; x++) {
 			for (int y = 0; y < height && !found; y++) {
-				if(get(x, y).equals(loc)){
+				if (get(x, y).equals(loc)) {
 
 					// Add left
-					if(x > 0){
+					if (x > 0) {
 						final Location left = get(x - 1, y);
 
-						if(left != null){
+						if (left != null) {
 							adjacent.add(left);
 						}
 					}
@@ -146,7 +147,7 @@ public final class Grid{
 					}
 
 					// Add up
-					if(y > 0){
+					if (y > 0) {
 						final Location up = get(x, y - 1);
 
 						if (up != null) {
@@ -160,12 +161,10 @@ public final class Grid{
 						adjacent.add(down);
 					}
 
-
 					found = true;
 				}
 			}
 		}
-
 
 		return adjacent;
 	}
@@ -199,28 +198,21 @@ public final class Grid{
 
 				final Location loc = col.get(y);
 
-				char pos = ' ';
+				String pos = "  ";
 
-				if(loc.isOccupied()){
-					pos = 'R';
-				}else if(loc instanceof PackingStation){
-					pos = 'P';
-				}else if(loc instanceof ChargingPod){
-					pos = 'C';
-				}else if(loc instanceof StorageShelf){
-					pos = 'S';
+				if (loc.isOccupied()) {
+					pos = loc.getOccupant().toString();
+				} else if (!(loc instanceof Empty)) {
+					pos = loc.toString();
 				}
 
-				output +=  pos  + " | ";
+				output += pos + " | ";
 
 			}
 
-
 		}
 
-
-return output;
-
+		return output;
 
 	}
 }

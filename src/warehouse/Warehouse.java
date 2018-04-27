@@ -28,6 +28,8 @@ public class Warehouse extends Application {
 
 	private final Set<StorageShelf> shelfs;
 
+	private final Queue<String> orderQueue;
+
 	private final Grid grid;
 
 	private final Statistic<Robot> ordersRejected;
@@ -44,6 +46,7 @@ public class Warehouse extends Application {
 		this.numberOfRobots = new Statistic<>();
 		this.packingStations = new HashSet<>();
 		this.shelfs = new HashSet<>();
+		this.orderQueue = new LinkedList<>();
 	}
 
 	public static void main(String[] args) {
@@ -57,7 +60,9 @@ public class Warehouse extends Application {
 
 		final Robot r = new Robot(30, cp);
 
-		final String order = "hk47";
+		w.addOrder("hk47");
+		w.addOrder("hk48");
+		w.addOrder("hk49");
 
 		// Place the locations on the grid.
 		w.addLocation(4, 4, s);
@@ -67,10 +72,8 @@ public class Warehouse extends Application {
 		// Place the robot on the grid.
 		w.setRobot(0, 0, r);
 
-		// Attempt to assign the order.
-		if (w.assignOrder(order)) {
-			w.simulate(40);
-		}
+		w.simulate(40);
+
 
 	}
 
@@ -124,7 +127,7 @@ public class Warehouse extends Application {
 		}
 
 		robots.put(robot, loc);
-		loc.setOccupied(true);
+		loc.setOccupant(robot);
 
 	}
 
@@ -157,11 +160,19 @@ public class Warehouse extends Application {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			System.out.println(grid.toString());
+
+			// if there is orders to process
+			if(!orderQueue.isEmpty()){
+
+				// Attempt to assign the order at the front of the queue.
+				if(assignOrder(orderQueue.peek())){
+					orderQueue.poll();
+				}
+			}
 
 			for (Robot robot : robots.keySet()) {
 
@@ -178,18 +189,20 @@ public class Warehouse extends Application {
 
 						if (!robot.canMove()) {
 
+							System.out.println("No power!!");
+
 						} else if (!current.canLeave(robot)) {
 
 							current.elaspeTick(robot);
 
 						} else {
 
-							current.setOccupied(false);
+							current.setOccupant(null);
 
 							// Get the element that is next in the path final
 							Location next = path.get(0);
 
-							next.setOccupied(true);
+							next.setOccupant(robot);
 
 							robot.move();
 
@@ -208,6 +221,7 @@ public class Warehouse extends Application {
 								} else if (target instanceof PackingStation) {
 
 									robot.returnHome();
+									robot.setCarrying(false);
 
 								}
 							}
@@ -238,7 +252,7 @@ public class Warehouse extends Application {
 			 * order and their is a empty shelf assigned the current robot to
 			 * the order.
 			 */
-			if (robotAssigned == null && !robot.hasOrder() && shelf != null) {
+			if (robotAssigned == null && !robot.hasOrder() && robot.isCharged() && shelf != null) {
 
 				robot.setOrder(order);
 				robot.setTarget(shelf);
@@ -331,6 +345,10 @@ public class Warehouse extends Application {
 			}
 		}
 
+	}
+
+	private void addOrder(String order){
+		orderQueue.add(order);
 	}
 
 	private StorageShelf getUnassignedShelf() {

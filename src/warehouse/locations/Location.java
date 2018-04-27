@@ -5,25 +5,15 @@ import warehouse.Robot;
 public abstract class Location {
 
 	/**
-	 * The next <code>int</code> of the next {@link Location}s {@link #UID}.
-	 *
-	 * @see #UID
-	 */
-	private static int nextUID = 0;
-
-	/**
 	 * The <code>Integer</code> that uniquely identifies <code>this</code>
 	 * {@link Location}.
 	 */
-	private final int UID;
+	private final String id;
 
-	/**
-	 * Whether or not this {@link Location} is occupied by a robot.
-	 */
-	protected boolean occupied;
+	protected Robot occupant;
 
-	public Location() {
-		this.UID = nextUID++;
+	public Location(String id) {
+		this.id = id;
 	}
 
 	public abstract boolean canLeave(Robot robot);
@@ -31,15 +21,15 @@ public abstract class Location {
 	public abstract void elaspeTick(Robot robot);
 
 	public String toString() {
-		return "" + UID;
+		return id;
 	}
 
 	public final boolean isOccupied() {
-		return occupied;
+		return occupant != null;
 	}
 
-	public final void setOccupied(boolean occupied) {
-		this.occupied = occupied;
+	public final void setOccupant(Robot occupant) {
+		this.occupant = occupant;
 	}
 
 	@Override
@@ -47,12 +37,16 @@ public abstract class Location {
 
 		if (obj instanceof Location) {
 
-			if (((Location) obj).UID == this.UID) {
+			if (((Location) obj).id == this.id) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	public Robot getOccupant() {
+		return occupant;
 	}
 
 }
