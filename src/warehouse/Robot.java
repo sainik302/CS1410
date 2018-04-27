@@ -1,5 +1,6 @@
 package warehouse;
 
+import warehouse.locations.ChargingPod;
 import warehouse.locations.Location;
 
 public class Robot{
@@ -14,14 +15,21 @@ public class Robot{
 
 	private Location target;
 
-	public Robot(int batteryCapacity) {
+	private ChargingPod home;
+
+	public Robot(int batteryCapacity, ChargingPod home) {
 
 		this.batteryCapacity = batteryCapacity;
 		this.batteryLevel = batteryCapacity;
 		this.currentOrder = "";
 		this.carrying = false;
 		this.target = null;
+		this.home = home;
 
+	}
+
+	public void returnHome(){
+		this.target = home;
 	}
 
 	public void setTarget(Location target){
@@ -38,6 +46,10 @@ public class Robot{
 
 	public void setOrder(String order){
 		this.currentOrder = order;
+	}
+
+	public boolean hasOrder(){
+		return !currentOrder.equals("");
 	}
 
 	public void setBatteryCapacity(int capacity){

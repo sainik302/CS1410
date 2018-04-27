@@ -1,5 +1,7 @@
 package warehouse;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -97,7 +99,8 @@ public final class Grid{
 	}
 
 	public void setLocation(int x, int y, Location newLoc) {
-		grid.get(x).set(y, newLoc);
+		grid.get(x).add(y, newLoc);
+		grid.get(x).remove(y + 1);
 	}
 
 	private final void populate(int width, int height) {
@@ -115,6 +118,54 @@ public final class Grid{
 
 	}
 
+	public List<Location> getAdjacent(Location loc){
+		final List<Location> adjacent = new LinkedList<Location>();
+
+		boolean found = false;
+
+		for (int x = 0; x < width && !found; x++) {
+			for (int y = 0; y < height && !found; y++) {
+				if(get(x, y).equals(loc)){
+
+					// Add left
+					if(x > 0){
+						final Location left = get(x - 1, y);
+
+						if(left != null){
+							adjacent.add(left);
+						}
+					}
+
+					// Add right
+					final Location right = get(x + 1, y);
+					if (right != null) {
+						adjacent.add(right);
+					}
+
+					// Add up
+					if(y > 0){
+						final Location up = get(x, y - 1);
+
+						if (up != null) {
+							adjacent.add(up);
+						}
+					}
+
+					// Add down
+					final Location down = get(x, y + 1);
+					if (down != null) {
+						adjacent.add(down);
+					}
+
+
+					found = true;
+				}
+			}
+		}
+
+
+		return adjacent;
+	}
 
 	public final void forEach(Consumer<Location> task) {
 		for (List<Location> col : grid) {
@@ -122,6 +173,16 @@ public final class Grid{
 				task.accept(location);
 			}
 		}
+	}
+
+
+	public int getWidth() {
+		return width;
+	}
+
+
+	public int getHeight() {
+		return height;
 	}
 
 }

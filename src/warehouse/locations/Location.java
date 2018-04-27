@@ -1,8 +1,5 @@
 package warehouse.locations;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import warehouse.Robot;
 
 public abstract class Location {
@@ -13,11 +10,6 @@ public abstract class Location {
 	 * @see #UID
 	 */
 	private static int nextUID = 0;
-
-	/**
-	 * Holds all the locations that a robot could move from the current two.
-	 */
-	private final List<Location> adjacentLocations;
 
 	/**
 	 * The <code>Integer</code> that uniquely identifies <code>this</code>
@@ -32,15 +24,14 @@ public abstract class Location {
 
 	public Location() {
 		this.UID = nextUID++;
-		this.adjacentLocations = new LinkedList<>();
 	}
 
 	public abstract boolean canLeave(Robot robot);
 
 	public abstract void elaspeTick(Robot robot);
 
-	public void printInfo() {
-
+	public String toString() {
+		return "" + UID;
 	}
 
 	public final boolean isOccupied() {
@@ -59,7 +50,6 @@ public abstract class Location {
 			if (((Location) obj).UID == this.UID) {
 				return true;
 			}
-
 		}
 
 		return false;
