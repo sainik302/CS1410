@@ -5,8 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import warehouse.locations.ChargingPod;
 import warehouse.locations.Empty;
 import warehouse.locations.Location;
+import warehouse.locations.PackingStation;
+import warehouse.locations.StorageShelf;
 
 public final class Grid{
 
@@ -175,14 +178,49 @@ public final class Grid{
 		}
 	}
 
-
 	public int getWidth() {
 		return width;
 	}
-
 
 	public int getHeight() {
 		return height;
 	}
 
+	@Override
+	public String toString() {
+
+		String output = "";
+
+		for (int y = 0; y < height; y++) {
+
+			output += "\n| ";
+
+			for (List<Location> col : grid) {
+
+				final Location loc = col.get(y);
+
+				char pos = ' ';
+
+				if(loc.isOccupied()){
+					pos = 'R';
+				}else if(loc instanceof PackingStation){
+					pos = 'P';
+				}else if(loc instanceof ChargingPod){
+					pos = 'C';
+				}else if(loc instanceof StorageShelf){
+					pos = 'S';
+				}
+
+				output +=  pos  + " | ";
+
+			}
+
+
+		}
+
+
+return output;
+
+
+	}
 }

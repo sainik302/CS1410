@@ -1,20 +1,14 @@
 package warehouse;
 
-//import java.math.RoundingMode;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.function.Consumer;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -52,26 +46,6 @@ public class Warehouse extends Application {
 		this.shelfs = new HashSet<>();
 	}
 
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-
-			// final Database d = createDatabase();
-			final FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("Grid.fxml"));
-			// loader. setController (new ListController(d));
-			final Parent root = loader.load();
-
-			Scene scene = new Scene(root, 400, 300);
-			primaryStage.setTitle("Warehouse Simulation");
-			primaryStage.setScene(scene);
-			primaryStage.show();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static void main(String[] args) {
 		// launch(args);
 
@@ -94,17 +68,100 @@ public class Warehouse extends Application {
 		w.setRobot(0, 0, r);
 
 		// Attempt to assign the order.
-		if(w.assignOrder(order)){
-			w.simulate(100);
+		if (w.assignOrder(order)) {
+			w.simulate(40);
 		}
-
-
 
 	}
 
-	public void simulate(int numberOfTicks) {
+	@Override
+	public void start(Stage primaryStage) {
+		try {
+
+			// final Database d = createDatabase();
+			final FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("Grid.fxml"));
+			// loader. setController (new ListController(d));
+			final Parent root = loader.load();
+
+			Scene scene = new Scene(root, 400, 300);
+			primaryStage.setTitle("Warehouse Simulation");
+			primaryStage.setScene(scene);
+			primaryStage.show();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String toString() {
+
+		DecimalFormat money = new DecimalFormat("#.##");
+		money.setRoundingMode(RoundingMode.CEILING);
+		DecimalFormat integer = new DecimalFormat("####");
+		integer.setRoundingMode(RoundingMode.CEILING);
+
+		String output = "";
+
+//		output += "Robots in station:         " + integer.format(numberOfRobots.sum()) + "\n";
+//		output += "Orders rejected:           " + integer.format(ordersRejected.sum()) + "\n";
+//		output += "Vehicles processed:          " + integer.format(ordersProcessed.sum()) + "\n";
+
+		output += "\n";
+		output += grid.toString();
+
+
+		return output;
+	}
+
+	public void setRobot(int x, int y, Robot robot) {
+
+		Location loc = grid.get(x, y);
+
+		if (loc.isOccupied()) {
+			throw new IllegalArgumentException("There is already a robot at (" + x + "," + y + ")");
+		}
+
+		robots.put(robot, loc);
+		loc.setOccupied(true);
+
+	}
+
+	public void addLocation(int x, int y, Location newLocation) {
+
+		// Check the location is not null.
+		if (newLocation == null) {
+			throw new NullPointerException("Location cannot be null");
+		}
+
+		// Add the location to a collection if necessary.
+		if (newLocation instanceof PackingStation) {
+
+			packingStations.add((PackingStation) newLocation);
+
+		} else if (newLocation instanceof StorageShelf) {
+
+			shelfs.add((StorageShelf) newLocation);
+
+		}
+
+		// Add the location to the grid.
+		grid.setLocation(x, y, newLocation);
+	}
+
+	private void simulate(int numberOfTicks) {
 
 		for (int i = 0; i < numberOfTicks; i++) {
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			System.out.println(grid.toString());
 
 			for (Robot robot : robots.keySet()) {
 
@@ -121,11 +178,8 @@ public class Warehouse extends Application {
 
 						if (!robot.canMove()) {
 
-							System.out.println("We are out of power captain!");
-
 						} else if (!current.canLeave(robot)) {
 
-							System.out.println("We chillin");
 							current.elaspeTick(robot);
 
 						} else {
@@ -141,23 +195,18 @@ public class Warehouse extends Application {
 
 							robots.replace(robot, next);
 
-							System.out.println("Move to: " + next);
-
 							if (next.equals(target)) {
 
 								if (target instanceof ChargingPod) {
 
-									System.out.println("Arrived at Charging Pod");
 									robot.setTarget(null);
 
 								} else if (target instanceof StorageShelf) {
 
-									System.out.println("Arrived at Shelf");
 									findPackingStation(robot.getOrder(), robot);
 
 								} else if (target instanceof PackingStation) {
 
-									System.out.println("Arrived at Packing Station");
 									robot.returnHome();
 
 								}
@@ -273,41 +322,6 @@ public class Warehouse extends Application {
 		return pathTo.get(target);
 	}
 
-	public void addLocation(int x, int y, Location newLocation) {
-
-		// Check the location is not null.
-		if (newLocation == null) {
-			throw new NullPointerException("Location cannot be null");
-		}
-
-		// Add the location to a collection if necessary.
-		if (newLocation instanceof PackingStation) {
-
-			packingStations.add((PackingStation) newLocation);
-
-		} else if (newLocation instanceof StorageShelf) {
-
-			shelfs.add((StorageShelf) newLocation);
-
-		}
-
-		// Add the location to the grid.
-		grid.setLocation(x, y, newLocation);
-	}
-
-	public void setRobot(int x, int y, Robot robot) {
-
-		Location loc = grid.get(x, y);
-
-		if (loc.isOccupied()) {
-			throw new IllegalArgumentException("There is already a robot at (" + x + "," + y + ")");
-		}
-
-		robots.put(robot, loc);
-		loc.setOccupied(true);
-
-	}
-
 	private void findPackingStation(String order, Robot robot) {
 
 		for (PackingStation packingStation : packingStations) {
@@ -340,141 +354,6 @@ public class Warehouse extends Application {
 		}
 
 		return unassignedShelf;
-	}
-
-	public void processLocations() {
-	}
-
-	private boolean move(Robot robot, Class<? extends Location> nextLocation) {
-
-		return false;
-
-	}
-
-	// private boolean findOptimalDestination(Robot robot, Class<? extends
-	// Location> nextLocation) {
-	//
-	// // Holds the best destination location found for the robot.
-	// Location optimumLocation = null;
-	//
-	// // Iterate though all the locations in the station
-	// for (Location location : locations) {
-	//
-	// /*
-	// * If the type of the current location is the same at the next
-	// * location AND there is enough space for the road user in that
-	// * location.
-	// */
-	// if (location.getClass() == nextLocation) {
-	//
-	// /*
-	// * If there is currently no optimum location for the road user
-	// * OR the current location is more optimal than the current most
-	// * optimal location.
-	// */
-	// if (optimumLocation == null || location.compare(optimumLocation)) {
-	//
-	// // Set the current location to be the most optimal location
-	// // for the road user.
-	// optimumLocation = location;
-	//
-	// }
-	//
-	// }
-	// }
-	//
-	// // If there is an optimal location for the robot then add it to it
-	// // and remove it from toMove.
-	// if (optimumLocation != null) {
-	//
-	// optimumLocation.enter(robot);
-	//
-	// toRemoveFrom_toMove.add(robot);
-	//
-	// return true;
-	//
-	// }
-	//
-	// // If no destination location was found.
-	// return false;
-	//
-	// }
-
-	// /**
-	// * Return all the {@link RoadUser}s in {@link #toMove} to the front of the
-	// * queue in their previous {@link Location}.
-	// *
-	// * @see environment.model.locations.Location
-	// * @see #toMove
-	// * @see environment.model.roadusers.RoadUser
-	// */
-	// private void returnToPriorLocation() {
-	//
-	// // Iterate through all the road users that couldn't be moved to their
-	// // next location.
-	// for (Robot robot : moveTo.keySet()) {
-	//
-	// // If the current road user is not in the queue to be removed from
-	// // toMove
-	// if (!toRemoveFrom_toMove.contains(robot)) {
-	//
-	// // Get the previous location of the current road user.
-	// Location pastLocation = moveTo.get(robot);
-	//
-	// // Return the road user to the its previous location. Then
-	// // remove it
-	// // from to move.
-	// pastLocation.returnToQueue(robot);
-	// toRemoveFrom_toMove.add(robot);
-	// }
-	// }
-	// }
-
-	// /**
-	// * Removes all the {@link RoadUser}s stored in {@link
-	// #toRemoveFrom_toMove}
-	// * and removes them from {@link #toMove}.
-	// *
-	// * @see #toMove
-	// * @see #toRemoveFrom_toMove
-	// */
-	// private void removeMoved() {
-	//
-	// // Iterate through all the elements from toRemoveFrom_toMove and remove
-	// // them from toMove.
-	// for (Robot robot : toRemoveFrom_toMove) {
-	// moveTo.remove(robot);
-	// }
-	//
-	// }
-
-	// @Override
-	@Override
-	public String toString() {
-
-		DecimalFormat money = new DecimalFormat("#.##");
-		money.setRoundingMode(RoundingMode.CEILING);
-		DecimalFormat integer = new DecimalFormat("####");
-		integer.setRoundingMode(RoundingMode.CEILING);
-
-		String output = "";
-
-		output += "Robots in station:         " + integer.format(numberOfRobots.sum()) + "\n";
-		output += "Orders rejected:           " + integer.format(ordersRejected.sum()) + "\n";
-		output += "Vehicles processed:          " + integer.format(ordersProcessed.sum()) + "\n";
-		// output += "Petrol profit: £" + money.format(fuelProfit.sum()) + "\n";
-		// output += "Lost petrol profit: £" +
-		// money.format(lostFuelprofit.sum()) + "\n";
-		// output += "Shopping profit: £" + money.format(salesProfit.sum()) +
-		// "\n";
-		// output += "Lost Shopping profit: £" +
-		// money.format(lostSalesProfit.sum()) + "\n";
-		// output += "Total profit: £" + money.format(salesProfit.sum() +
-		// fuelProfit.sum()) + "\n";
-		// output += "Total lost profit: £" + money.format(lostFuelprofit.sum()
-		// + lostSalesProfit.sum()) + "\n";
-
-		return output;
 	}
 
 }
